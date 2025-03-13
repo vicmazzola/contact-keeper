@@ -5,13 +5,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.contactkeeper.ui.ContactsScreen
 import com.example.contactkeeper.ui.theme.ContactKeeperTheme
+import com.example.contactkeeper.viewmodel.ContactsViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,29 +20,24 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ContactKeeperTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    val viewModel: ContactsViewModel = viewModel()
+                    ContactsScreen(viewModel)
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
+@Preview(
+    showSystemUi = true,
+    showBackground = true
+)
 @Composable
-fun GreetingPreview() {
+fun ContactsScreenPreview() {
     ContactKeeperTheme {
-        Greeting("Android")
+        val viewModel = ContactsViewModel()
+        ContactsScreen(viewModel)
     }
 }
