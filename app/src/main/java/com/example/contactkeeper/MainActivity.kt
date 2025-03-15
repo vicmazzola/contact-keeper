@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -74,6 +75,14 @@ fun ContactsScreen() {
         mutableStateOf(false)
     }
 
+    // GET CONTEXT
+    val context = LocalContext.current
+    val contactRepository = ContactRepository(context)
+
+    var contactListState = remember {
+        mutableStateOf(contactRepository.getAllContacts())
+    }
+
     Column {
         ContactForm(
             name = nameState.value,
@@ -87,9 +96,12 @@ fun ContactsScreen() {
             },
             onFriendChange = {
                 friendState.value = it
+            },
+            update = {
+                contactListState.value = contactRepository.getAllContacts()
             }
         )
-        ContactList()
+        ContactList(contactListState)
     }
 }
 
@@ -101,7 +113,8 @@ fun ContactForm(
     friend: Boolean,
     onNameChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
-    onFriendChange: (Boolean) -> Unit
+    onFriendChange: (Boolean) -> Unit,
+    update: () -> Unit
 ) {
 
     // GET CONTEXT
@@ -164,6 +177,8 @@ fun ContactForm(
                     isFriend = friend
                 )
                 contactRepository.insertContact(contact)
+                update()
+
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -176,22 +191,22 @@ fun ContactForm(
 }
 
 @Composable
-fun ContactList() {
+fun ContactList(contactList: MutableState<List<Contact>>) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        for (i in 0..10) {
-            ContactCard()
+        for (contact in contactList.value) {
+            ContactCard(contact)
             Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
 
 @Composable
-fun ContactCard() {
+fun ContactCard(contact: Contact) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -207,17 +222,17 @@ fun ContactCard() {
                     .weight(2f)
             ) {
                 Text(
-                    text = "Contact Name",
+                    text = contact.name,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "8888-9999",
+                    text = contact.phone,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Friend",
+                    text = if (contact.isFriend) "Friend" else "Contact",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
