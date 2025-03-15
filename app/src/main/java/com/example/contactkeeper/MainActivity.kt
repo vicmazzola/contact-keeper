@@ -101,7 +101,10 @@ fun ContactsScreen() {
                 contactListState.value = contactRepository.getAllContacts()
             }
         )
-        ContactList(contactListState)
+        ContactList(
+            contactListState,
+            update = { contactListState.value = contactRepository.getAllContacts() }
+        )
     }
 }
 
@@ -191,7 +194,10 @@ fun ContactForm(
 }
 
 @Composable
-fun ContactList(contactList: MutableState<List<Contact>>) {
+fun ContactList(
+    contactList: MutableState<List<Contact>>,
+    update: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -199,20 +205,24 @@ fun ContactList(contactList: MutableState<List<Contact>>) {
             .verticalScroll(rememberScrollState())
     ) {
         for (contact in contactList.value) {
-            ContactCard(contact)
+            ContactCard(contact, update)
             Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
 
 @Composable
-fun ContactCard(contact: Contact) {
+fun ContactCard(
+    contact: Contact,
+    update: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = Color.LightGray
         )
     ) {
+        val context = LocalContext.current
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -237,7 +247,13 @@ fun ContactCard(contact: Contact) {
                     fontWeight = FontWeight.Bold
                 )
             }
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(
+                onClick = {
+                    val contactRepository = ContactRepository(context = context)
+                    contactRepository.deleteContact(contact = contact)
+                    update()
+                })
+            {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = ""
