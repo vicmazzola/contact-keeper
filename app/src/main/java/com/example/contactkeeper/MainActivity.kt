@@ -32,11 +32,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.contactkeeper.database.repository.ContactRepository
+import com.example.contactkeeper.model.Contact
 import com.example.contactkeeper.ui.theme.ContactKeeperTheme
 
 class MainActivity : ComponentActivity() {
@@ -100,6 +103,11 @@ fun ContactForm(
     onPhoneChange: (String) -> Unit,
     onFriendChange: (Boolean) -> Unit
 ) {
+
+    // GET CONTEXT
+    val context = LocalContext.current
+    val contactRepository = ContactRepository(context)
+
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -148,7 +156,15 @@ fun ContactForm(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                val contact = Contact(
+                    id = 0,
+                    name = name,
+                    phone = phone,
+                    isFriend = friend
+                )
+                contactRepository.insertContact(contact)
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
