@@ -17,4 +17,4 @@ A simple **Kotlin Jetpack Compose** app using **MVVM architecture** and **Room D
 ## 📦 Installation
 1. Clone this repository:
    ```sh
-   git clone https://github.com/yourusername/ContactKeeper.git
+   git clone https://github.com/yourusername/contact-keeper.git
